@@ -1,0 +1,11 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+lib/Business/OnlinePayment/Iridium.pm
+lib/Business/OnlinePayment/Iridium/Action.pm
+lib/Business/OnlinePayment/Iridium/Action/CardDetailsTransaction.pm
+lib/Business/OnlinePayment/Iridium/Action/GetCardType.pm
+lib/Business/OnlinePayment/Iridium/Action/GetGatewayEntryPoints.pm
+lib/Business/OnlinePayment/Iridium/Action/ThreeDSecureAuthentication.pm
+t/00-load.t
