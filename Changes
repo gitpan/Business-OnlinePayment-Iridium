@@ -1,4 +1,9 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.02    Mon Jun 30 18:48:20 2008 GMT
+        - added META.yml
+        - use constant pragma in BOP::Iridium::Action
+        - fixed BOP::Iridium::Action->request
+
 0.01    Thu May 29 17:57:29 2008 GMT
         Initial release.

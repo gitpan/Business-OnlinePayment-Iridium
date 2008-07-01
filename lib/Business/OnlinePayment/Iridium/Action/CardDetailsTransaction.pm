@@ -51,12 +51,6 @@ has 'CurrencyCode' => (
   is  => 'rw', default => '826' # GBP
 );
 
-=head1 NAME
-
-Business::OnlinePayment::Iridium::Action::CardDetailsTransaction
-
-=cut
-
 sub _build__type { return 'CardDetailsTransaction' }
 
 sub template {

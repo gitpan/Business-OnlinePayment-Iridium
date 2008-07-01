@@ -1,0 +1,26 @@
+---
+abstract: 'Iridium backend for Business::OnlinePayment'
+author:
+  - 'wreis: Wallace Reis <reis.wallace@gmail.com>'
+distribution_type: module
+generated_by: 'Module::Install version 0.75'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
+name: Business-OnlinePayment-Iridium
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Business::OnlinePayment: 2.01
+  HTTP::Request: 5.811
+  LWP::UserAgent: 5.81
+  Moose: 0.44
+  Template: 2.19
+  Test::More: 0
+  XML::Simple: 2.18
+  aliased: 0.22
+  constant: 1.15
+version: 0.02

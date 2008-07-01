@@ -17,6 +17,7 @@ use constant {
     'name_on_card'    => 'CardName',
     'amount'          => 'Amount',
     'invoice_number'  => 'OrderID',
+    'description'     => 'OrderDescription',
     'action'          => 'TransactionType',
     'expiration'      => 'Expiration',
     'cross_reference' => 'CrossReference',
@@ -46,7 +47,7 @@ use constant {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has 'require_3d' => (
   isa => 'Bool',
@@ -313,9 +314,13 @@ L<http://search.cpan.org/dist/Business-OnlinePayment-Iridium>
 
 =back
 
+=head1 SEE ALSO
+
+L<Business::OnlinePayment>
+
 =head1 AUTHOR
 
-  wreis: Wallace Reis <wallace@reis.org.br>
+  wreis: Wallace Reis <reis.wallace@gmail.com>
 
 =head1 ACKNOWLEDGEMENTS
 

@@ -11,12 +11,6 @@ has 'CardNumber' => (
   is  => 'rw', required => '1'
 );
 
-=head1 NAME
-
-Business::OnlinePayment::Iridium::Action::CardType
-
-=cut
-
 sub _build__type { return 'GetCardType' }
 
 sub template {

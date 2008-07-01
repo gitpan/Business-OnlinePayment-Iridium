@@ -6,12 +6,6 @@ use Moose;
 
 with 'Business::OnlinePayment::Iridium::Action';
 
-=head1 NAME
-
-Business::OnlinePayment::Iridium::Action::GatewayEntryPoints
-
-=cut
-
 sub _build__type { return 'GetGatewayEntryPoints' }
 
 sub template {

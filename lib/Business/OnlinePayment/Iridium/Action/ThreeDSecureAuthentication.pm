@@ -16,12 +16,6 @@ has 'PaRES' => (
   is  => 'rw', required => '1'
 );
 
-=head1 NAME
-
-Business::OnlinePayment::Iridium::Action::ThreeDSecureAuthentication
-
-=cut
-
 sub _build__type { return 'ThreeDSecureAuthentication' }
 
 sub template {

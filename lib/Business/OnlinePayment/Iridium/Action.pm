@@ -5,6 +5,9 @@ use Template;
 use LWP::UserAgent ();
 use HTTP::Request ();
 use XML::Simple ();
+use constant SERVERS => [
+  'https://gw1.iridiumcorp.net/', 'https://gw2.iridiumcorp.net/'
+];
 
 has 'MerchantID' => (
   isa => 'Str',
@@ -21,26 +24,14 @@ has 'PassOutData' => (
   is  => 'rw', required => '0'
 );
 
-has '_servers' => (
-  isa => 'ArrayRef',
-  is  => 'ro', lazy_build => '1'
-);
-
-sub _build__servers {
-  #return [ 'http://sniff.iridiumcorp.net:32321' ];
-  return [ 'https://gw1.iridiumcorp.net/', 'https://gw2.iridiumcorp.net/' ];
-}
-
 has '_user_agent' => (
   isa => 'LWP::UserAgent',
-  is  => 'ro', lazy_build => '1'
+  is  => 'ro', default => sub {
+    return LWP::UserAgent->new(
+      agent   => 'Business::OnlinePayment::Iridium',
+    )
+  }
 );
-
-sub _build__user_agent {
-  return LWP::UserAgent->new(
-    agent   => 'Business::OnlinePayment::Iridium',
-  );
-}
 
 has '_type' => (
   isa => 'Str',
@@ -50,12 +41,6 @@ has '_type' => (
 requires '_build__type';
 
 requires 'template';
-
-=head1 NAME
-
-Business::OnlinePayment::Iridium::Action
-
-=cut
 
 sub _build_req_content {
   my $self = shift;
@@ -74,10 +59,10 @@ sub _build_req_content {
 sub request {
   my $self = shift;
   my $content = $self->_build_req_content;
-  my @servers = @{$self->_servers};
+  my $servers = SERVERS;
   my $action_url = 'https://www.thepaymentgateway.net/';
   my $ua = $self->_user_agent;
-  my $req = HTTP::Request->new(POST => shift @servers);
+  my $req = HTTP::Request->new(POST => shift @$servers);
   $req->content_type('text/xml; charset=UTF-8');
   $req->header('SOAPAction' => $action_url . $self->_type);
   $req->content($content);
@@ -86,8 +71,8 @@ sub request {
 
   if ($res->is_success) {
     return $self->parse_response($res->content);
-  } elsif(@servers) {
-    $req->uri(shift @servers);
+  } else {
+    $req->uri(shift @$servers);
     $res = $ua->request($req);
 
     if ($res->is_success && $res->content) {
