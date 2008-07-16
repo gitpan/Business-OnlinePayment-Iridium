@@ -29,25 +29,11 @@ use constant {
     'authorization only'   => 'STORE',
     'post authorization'   => 'PREAUTH',
   },
-  CARD_TYPE_MAP => {
-    'american express' => 'AMEX',
-    'visa'             => 'VISA',
-    'visa card'        => 'VISA',
-    'visa credit'      => 'VISA',
-    'visa electron'    => 'UKE',
-    'visa debit'       => 'UKE',
-    'mastercard'       => 'MC',
-    'maestro'          => 'SWITCH',
-    'switch'           => 'SWITCH',
-    'switch solo'      => 'SWITCH',
-    'diners club'      => 'DC',
-    'jcb'              => 'JB',
-  }
 };
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 has 'require_3d' => (
   isa => 'Bool',
@@ -195,14 +181,16 @@ sub get_card_type {
 
 sub submit {
   my $self = shift;
+  if ( $self->test_transaction ) {
+    carp $self->error_message('Only test cards work in test mode');
+    return $self->is_success(0);
+  }
   $self->required_fields(qw/login password card_number name_on_card
      expiration invoice_number action amount/);
   my %data = $self->remap_fields(FIELD_MAP);
   my $tx_type = lc($data{'TransactionType'});
   confess "Action 'authorization only' is not supported yet."
     if $tx_type eq 'authorization only';
-  confess 'To run in test mode, use test card details from docs.'
-    if $self->test_transaction;
 
   my $amount = $self->_format_amount($data{'Amount'});
   $data{'Expiration'} =~ m|(\d{2})/?(\d{2})|;
@@ -210,7 +198,9 @@ sub submit {
 
   my $tx = CardDetailsTransaction->new(
         ( map { $_ => $data{$_} }
-            qw(MerchantID Password CardNumber CardName OrderID) ),
+            grep { $data{$_} }
+              qw(MerchantID Password CardNumber CardName OrderID
+                 OrderDescription) ),
         TransactionType => ACTION_MAP->{$tx_type},
         Amount          => $amount,
         ExpireMonth     => $expire_month,
@@ -283,8 +273,7 @@ you with the authorization code.
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-business-onlinepayment-iridium at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Business-OnlinePayment-Iridium>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Business-OnlinePayment-Iridium>.  I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 

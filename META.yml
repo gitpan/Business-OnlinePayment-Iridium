@@ -23,4 +23,4 @@ requires:
   XML::Simple: 2.18
   aliased: 0.22
   constant: 1.15
-version: 0.02
+version: 0.03

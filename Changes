@@ -1,5 +1,12 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.03    Tue Jul 15 23:59:00 GMT
+        - takes order description into account
+        - nuked unused CARD_TYPE_MAP
+        - fixed Action->request (related to SERVERS)
+        - not die if $self->test_transaction, just not complete submission
+          and set ->is_success(0)
+
 0.02    Mon Jun 30 18:48:20 2008 GMT
         - added META.yml
         - use constant pragma in BOP::Iridium::Action
