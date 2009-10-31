@@ -1,5 +1,12 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.04    Sat Oct 31 19:30:00 GMT
+        - fixes for payment | added Iridum->reference_transaction
+        - added pareq attr
+        - get rid of constant pragma
+        - sanity check on 'expiration' param
+        - added support for CrossReferenceTransaction message
+
 0.03    Tue Jul 15 23:59:00 GMT
         - takes order description into account
         - nuked unused CARD_TYPE_MAP

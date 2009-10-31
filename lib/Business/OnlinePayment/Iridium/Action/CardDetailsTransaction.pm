@@ -1,7 +1,5 @@
 package Business::OnlinePayment::Iridium::Action::CardDetailsTransaction;
 
-use warnings;
-use strict;
 use Moose;
 
 with 'Business::OnlinePayment::Iridium::Action';
@@ -44,11 +42,6 @@ has 'ExpireYear' => (
 has 'Amount' => (
   isa => 'Int',
   is  => 'rw', required => '1'
-);
-
-has 'CurrencyCode' => (
-  isa => 'Int',
-  is  => 'rw', default => '826' # GBP
 );
 
 sub _build__type { return 'CardDetailsTransaction' }

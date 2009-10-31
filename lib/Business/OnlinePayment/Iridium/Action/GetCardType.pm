@@ -1,7 +1,5 @@
 package Business::OnlinePayment::Iridium::Action::GetCardType;
 
-use warnings;
-use strict;
 use Moose;
 
 with 'Business::OnlinePayment::Iridium::Action';

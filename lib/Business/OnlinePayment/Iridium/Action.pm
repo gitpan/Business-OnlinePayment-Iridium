@@ -5,9 +5,13 @@ use Template;
 use LWP::UserAgent ();
 use HTTP::Request ();
 use XML::Simple ();
-use constant SERVERS => [
-  'https://gw1.iridiumcorp.net/', 'https://gw2.iridiumcorp.net/'
-];
+
+sub SERVERS {
+  return (
+    'https://gw1.iridiumcorp.net/',
+    'https://gw2.iridiumcorp.net/'
+  );
+}
 
 has 'MerchantID' => (
   isa => 'Str',
@@ -17,6 +21,11 @@ has 'MerchantID' => (
 has 'Password' => (
   isa => 'Str',
   is  => 'rw', required => '1'
+);
+
+has 'CurrencyCode' => (
+  isa => 'Int',
+  is  => 'rw', default => '826' # GBP
 );
 
 has 'PassOutData' => (
@@ -61,7 +70,9 @@ sub request {
   my $content = $self->_build_req_content;
   my $action_url = 'https://www.thepaymentgateway.net/';
   my $ua = $self->_user_agent;
-  my $req = HTTP::Request->new(POST => SERVERS->[0]);
+  my @SERVERS = $self->SERVERS;
+
+  my $req = HTTP::Request->new(POST => $SERVERS[0]);
   $req->content_type('text/xml; charset=UTF-8');
   $req->header('SOAPAction' => $action_url . $self->_type);
   $req->content($content);
@@ -71,7 +82,7 @@ sub request {
   if ($res->is_success) {
     return $self->parse_response($res->content);
   } else {
-    $req->uri(SERVERS->[1]);
+    $req->uri($SERVERS[1]);
     $res = $ua->request($req);
 
     if ($res->is_success && $res->content) {

@@ -2,12 +2,16 @@
 abstract: 'Iridium backend for Business::OnlinePayment'
 author:
   - 'wreis: Wallace Reis <reis.wallace@gmail.com>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.75'
+generated_by: 'Module::Install version 0.91'
 license: perl
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.3.html
-  version: 1.3
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
 name: Business-OnlinePayment-Iridium
 no_index:
   directory:
@@ -22,5 +26,6 @@ requires:
   Test::More: 0
   XML::Simple: 2.18
   aliased: 0.22
-  constant: 1.15
-version: 0.03
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.04

@@ -7,10 +7,13 @@ use aliased 'Business::OnlinePayment::Iridium::Action::GetGatewayEntryPoints';
 use aliased 'Business::OnlinePayment::Iridium::Action::GetCardType';
 use aliased 'Business::OnlinePayment::Iridium::Action::CardDetailsTransaction';
 use aliased
+   'Business::OnlinePayment::Iridium::Action::CrossReferenceTransaction';
+use aliased
    'Business::OnlinePayment::Iridium::Action::ThreeDSecureAuthentication';
-use Carp 'carp';
-use constant {
-  FIELD_MAP => {
+use Carp qw/carp croak/;
+
+sub FIELD_MAP {
+  return (
     'login'           => 'MerchantID',
     'password'        => 'Password',
     'card_number'     => 'CardNumber',
@@ -22,18 +25,21 @@ use constant {
     'expiration'      => 'Expiration',
     'cross_reference' => 'CrossReference',
     'pares'           => 'PaRES',
-  },
-  ACTION_MAP => {
+  );
+}
+
+sub ACTION_MAP {
+  return (
     'normal authorization' => 'SALE',
     'refund ammount'       => 'REFUND',
-    'authorization only'   => 'STORE',
-    'post authorization'   => 'PREAUTH',
-  },
-};
+    'authorization only'   => 'PREAUTH',
+    'post authorization'   => 'STORE',
+  );
+}
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 has 'require_3d' => (
   isa => 'Bool',
@@ -46,6 +52,11 @@ has 'forward_to' => (
 );
 
 has 'authentication_key' => (
+  isa => 'Str',
+  is  => 'rw', required => '0'
+);
+
+has 'pareq' => (
   isa => 'Str',
   is  => 'rw', required => '0'
 );
@@ -97,6 +108,16 @@ sub _check_amount_field {
       || lc($content{'action'}) eq 'authorization only';
 }
 
+sub _running_in_test_mode {
+  my $self = shift;
+  if ( $self->test_transaction ) {
+    carp $self->error_message('Only test cards work in test mode');
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 sub _format_amount {
   my ( $self, $amount ) = @_;
   $amount = sprintf("%.2f",$amount);
@@ -118,7 +139,7 @@ sub _submit_callback {
     $self->require_3d(1);
     my $threeD_data = $res_data->{'ThreeDSecureOutputData'};
     $self->forward_to($threeD_data->{'ACSURL'});
-    $self->authentication_key($threeD_data->{'PaREQ'});
+    $self->pareq($threeD_data->{'PaREQ'});
     $self->cross_reference($res_data->{'CrossReference'});
   } else {
     $self->is_success(0);
@@ -127,10 +148,10 @@ sub _submit_callback {
 }
 
 override remap_fields => sub {
-    my ( $self, $map ) = @_;
+    my ( $self, %map ) = @_;
     my %content = $self->content();
-    foreach (keys %$map) {
-        $content{$map->{$_}} = $content{$_};
+    foreach (keys %map) {
+        $content{$map{$_}} = $content{$_};
     }
     $self->content(%content);
 };
@@ -153,8 +174,10 @@ This allows the merchant to determine the card type of the card in question.
 
 sub get_card_type {
   my $self = shift;
+  return $self->is_success(0) if $self->_running_in_test_mode;
+
   $self->required_fields(qw/login password card_number/);
-  my %data = $self->remap_fields(FIELD_MAP);
+  my %data = $self->remap_fields($self->FIELD_MAP);
 
   my $tx = GetCardType->new(
         map { $_ => $data{$_} } qw(MerchantID Password CardNumber)
@@ -181,19 +204,16 @@ sub get_card_type {
 
 sub submit {
   my $self = shift;
-  if ( $self->test_transaction ) {
-    carp $self->error_message('Only test cards work in test mode');
-    return $self->is_success(0);
-  }
+  return $self->is_success(0) if $self->_running_in_test_mode;
+
   $self->required_fields(qw/login password card_number name_on_card
      expiration invoice_number action amount/);
-  my %data = $self->remap_fields(FIELD_MAP);
+  my %data = $self->remap_fields($self->FIELD_MAP);
   my $tx_type = lc($data{'TransactionType'});
-  confess "Action 'authorization only' is not supported yet."
-    if $tx_type eq 'authorization only';
+  my %ACTION_MAP = $self->ACTION_MAP;
 
-  my $amount = $self->_format_amount($data{'Amount'});
-  $data{'Expiration'} =~ m|(\d{2})/?(\d{2})|;
+  croak "'expiration' is invalid, format is: MM/YY or MMYY"
+    unless $data{'Expiration'} =~ m|(\d{2})/?(\d{2})|;
   my ($expire_month, $expire_year) = ($1, $2);
 
   my $tx = CardDetailsTransaction->new(
@@ -201,10 +221,39 @@ sub submit {
             grep { $data{$_} }
               qw(MerchantID Password CardNumber CardName OrderID
                  OrderDescription) ),
-        TransactionType => ACTION_MAP->{$tx_type},
-        Amount          => $amount,
+        TransactionType => $ACTION_MAP{$tx_type},
+        Amount          => $self->_format_amount($data{'Amount'}),
         ExpireMonth     => $expire_month,
         ExpireYear      => $expire_year,
+  );
+  my $res = $tx->request;
+  $res = $res->{'soap:Body'}->{'CardDetailsTransactionResponse'};
+  my $res_result = $res->{'CardDetailsTransactionResult'};
+  $self->server_response($res);
+  $self->result_code($res_result->{'StatusCode'});
+
+  $self->_submit_callback($res_result, $res->{'TransactionOutputData'});
+}
+
+=head2 reference_transaction
+
+=cut
+
+sub reference_transaction {
+  my $self = shift;
+  return $self->is_success(0) if $self->_running_in_test_mode;
+
+  $self->required_fields(qw/login password invoice_number action amount/);
+  my %data = $self->remap_fields($self->FIELD_MAP);
+  my $tx_type = lc($data{'TransactionType'});
+  my %ACTION_MAP = $self->ACTION_MAP;
+
+  my $tx = CrossReferenceTransaction->new(
+        ( map { $_ => $data{$_} }
+            grep { $data{$_} }
+              qw(MerchantID Password OrderID OrderDescription) ),
+        TransactionType => $ACTION_MAP{$tx_type},
+        Amount          => $self->_format_amount($data{'Amount'}),
   );
   my $res = $tx->request;
   $res = $res->{'soap:Body'}->{'CardDetailsTransactionResponse'};
@@ -221,8 +270,10 @@ sub submit {
 
 sub submit_3d {
   my $self = shift;
+  return $self->is_success(0) if $self->_running_in_test_mode;
+
   $self->required_fields(qw/login password cross_reference pares/);
-  my %data = $self->remap_fields(FIELD_MAP);
+  my %data = $self->remap_fields($self->FIELD_MAP);
 
   my $tx = ThreeDSecureAuthentication->new(
         ( map { $_ => $data{$_} }
