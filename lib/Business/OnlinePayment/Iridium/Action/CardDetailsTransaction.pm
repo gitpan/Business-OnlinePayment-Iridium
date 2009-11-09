@@ -39,6 +39,16 @@ has 'ExpireYear' => (
   is  => 'rw', required => '1'
 );
 
+has 'CV2' => (
+  isa => 'Int',
+  is  => 'rw',
+);
+
+has 'IssueNumber' => (
+  isa => 'Int',
+  is  => 'rw',
+);
+
 has 'Amount' => (
   isa => 'Int',
   is  => 'rw', required => '1'
@@ -60,14 +70,17 @@ sub template {
         <MessageDetails TransactionType="[% TransactionType %]" />
         <OrderID>[% OrderID %]</OrderID>
         <OrderDescription>[% OrderDescription %]</OrderDescription>
+        <TransactionControl>
+          [% IF CV2.defined %]<EchoCV2CheckResult>TRUE</EchoCV2CheckResult>[% END %]
+        </TransactionControl>
       </TransactionDetails>
       <CardDetails>
         <CardName>[% CardName %]</CardName>
         <CardNumber>[% CardNumber %]</CardNumber>
         <ExpiryDate Month="[% ExpireMonth %]" Year="[% ExpireYear %]" />
         <StartDate Month="[% StartMonth %]" Year="[% StartYear %]" />
-        <CV2>[% CV2 %]</CV2>
-        <IssueNumber>[% IssueNumber %]</IssueNumber>
+        [% IF CV2.defined %]<CV2>[% CV2 %]</CV2>[% END %]
+        [% IF IssueNumber.defined %]<IssueNumber>[% IssueNumber %]</IssueNumber>[% END %]
       </CardDetails>
       <CustomerDetails>
         <BillingAddress>

@@ -1,7 +1,10 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.05    Mon Nov 09 19:15:00 GMT
+        - added cv2 and issue_number support
+        - included CrossReferenceTransaction action class
+
 0.04    Sat Oct 31 19:30:00 GMT
-        - fixes for payment | added Iridum->reference_transaction
         - added pareq attr
         - get rid of constant pragma
         - sanity check on 'expiration' param

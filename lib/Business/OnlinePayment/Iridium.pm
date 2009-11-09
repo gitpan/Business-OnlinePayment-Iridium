@@ -18,6 +18,8 @@ sub FIELD_MAP {
     'password'        => 'Password',
     'card_number'     => 'CardNumber',
     'name_on_card'    => 'CardName',
+    ( map { $_ => 'CV2' } qw/cv2 cvv cvv2/ ),
+    'issue_number'    => 'IssueNumber',
     'amount'          => 'Amount',
     'invoice_number'  => 'OrderID',
     'description'     => 'OrderDescription',
@@ -39,7 +41,7 @@ sub ACTION_MAP {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 has 'require_3d' => (
   isa => 'Bool',
