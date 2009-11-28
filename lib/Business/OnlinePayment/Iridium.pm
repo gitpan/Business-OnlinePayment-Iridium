@@ -41,7 +41,7 @@ sub ACTION_MAP {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 has 'require_3d' => (
   isa => 'Bool',
@@ -83,6 +83,7 @@ Business::OnlinePayment::Iridium - Iridium backend for Business::OnlinePayment
      'card_number'    => '4976000000003436',
      'name_on_card'   => 'John Watson',
      'expiration'     => '12/12',
+     'cv2'            => '242',
      'invoice_number' => 'TUID',
      'amount'         => '123.23',
      'action'         => 'normal authorization'

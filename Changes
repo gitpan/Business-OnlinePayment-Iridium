@@ -1,5 +1,9 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.06    Sat Nov 28 13:40:00 GMT
+        - fixed use of Class::MOP::Class' API
+        - updated SYNOPSIS 
+
 0.05    Mon Nov 09 19:15:00 GMT
         - added cv2 and issue_number support
         - included CrossReferenceTransaction action class

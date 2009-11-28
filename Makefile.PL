@@ -5,7 +5,7 @@ all_from 'lib/Business/OnlinePayment/Iridium.pm';
 
 requires 'Test::More'              => 0;
 requires 'Business::OnlinePayment' => 2.01;
-requires 'Moose'                   => 0.44;
+requires 'Moose'                   => 0.93;
 requires 'Template'                => 2.19;
 requires 'aliased'                 => 0.22;
 requires 'LWP::UserAgent'          => 5.810;

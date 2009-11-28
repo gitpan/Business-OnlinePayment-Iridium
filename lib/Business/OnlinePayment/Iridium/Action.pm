@@ -57,7 +57,7 @@ sub _build_req_content {
     map {
       my $attr_name = $_->name;
       $attr_name => $self->$attr_name
-    } $self->meta->compute_all_applicable_attributes
+    } $self->meta->get_all_attributes
   };
   my ($template, $output) = ($self->template, '');
   my $tt = Template->new;
