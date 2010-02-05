@@ -1,5 +1,11 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.08    Fri Feb 05 23:00:00 GMT
+        - Extended field map, set error messages correctly 
+
+0.07    Thu Feb 04 17:00:00 GMT
+        - Added lots of missing attributes to CardDetailsTransaction
+
 0.06    Sat Nov 28 13:40:00 GMT
         - fixed use of Class::MOP::Class' API
         - updated SYNOPSIS 

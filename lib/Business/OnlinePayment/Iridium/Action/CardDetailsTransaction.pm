@@ -5,59 +5,181 @@ use Moose;
 with 'Business::OnlinePayment::Iridium::Action';
 
 has 'OrderID' => (
-  isa => 'Str',
-  is  => 'rw', required => '1'
+    isa      => 'Str',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'OrderDescription' => (
-  isa => 'Str',
-  is  => 'rw', required => '0'
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
 );
 
 has 'TransactionType' => (
-  isa => 'Str',
-  is  => 'rw', required => '1'
+    isa      => 'Str',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'CardName' => (
-  isa => 'Str',
-  is  => 'rw', required => '1'
+    isa      => 'Str',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'CardNumber' => (
-  isa => 'Int',
-  is  => 'rw', required => '1'
+    isa      => 'Int',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'ExpireMonth' => (
-  isa => 'Int',
-  is  => 'rw', required => '1'
+    isa      => 'Int',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'ExpireYear' => (
-  isa => 'Int',
-  is  => 'rw', required => '1'
+    isa      => 'Int',
+    is       => 'rw',
+    required => '1'
 );
 
 has 'CV2' => (
-  isa => 'Int',
-  is  => 'rw',
+    isa => 'Int',
+    is  => 'rw',
 );
 
 has 'IssueNumber' => (
-  isa => 'Int',
-  is  => 'rw',
+    isa => 'Int',
+    is  => 'rw',
 );
 
 has 'Amount' => (
-  isa => 'Int',
-  is  => 'rw', required => '1'
+    isa      => 'Int',
+    is       => 'rw',
+    required => '1'
+);
+
+has 'EchoCardType' => (
+    isa      => 'Bool',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'EchoAVSCheckResult' => (
+    isa      => 'Bool',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'EchoCV2CheckResult' => (
+    isa      => 'Bool',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'EchoAmountReceived' => (
+    isa      => 'Bool',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'DuplicateDelay' => (
+    isa      => 'Int',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'AVSOverridePolicy' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'CV2OverridePolicy' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'ThreeDSecureOverridePolicy' => (
+    isa      => 'Bool',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'Address1' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'Address2' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'Address3' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'Address4' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'City' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'State' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'PostCode' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'CountryCode' => (
+    isa      => 'Int',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'EmailAddress' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'PhoneNumber' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
+);
+
+has 'PassOutData' => (
+    isa      => 'Str',
+    is       => 'rw',
+    required => '0'
 );
 
 sub _build__type { return 'CardDetailsTransaction' }
 
 sub template {
-  return <<DATA;
+    return <<DATA;
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -71,7 +193,14 @@ sub template {
         <OrderID>[% OrderID %]</OrderID>
         <OrderDescription>[% OrderDescription %]</OrderDescription>
         <TransactionControl>
-          [% IF CV2.defined %]<EchoCV2CheckResult>TRUE</EchoCV2CheckResult>[% END %]
+          [% IF EchoCardType.defined %]<EchoCardType>TRUE</EchoCardType>[% END %]
+          [% IF EchoAVSCheckResult.defined %]<EchoAVSCheckResult>TRUE</EchoAVSCheckResult>[% END %]
+          [% IF EchoCV2CheckResult.defined %]<EchoCV2CheckResult>TRUE</EchoCV2CheckResult>[% END %]
+          [% IF EchoAmountReceived.defined %]<EchoAmountReceived>TRUE</EchoAmountReceived>[% END %]
+          [% IF DuplicateDelay.defined %]<DuplicateDelay>[% DuplicateDelay %]</DuplicateDelay>[% END %]
+          [% IF AVSOverridePolicy.defined %]<AVSOverridePolicy>[% AVSOverridePolicy %]</AVSOverridePolicy>[% END %]
+          [% IF CV2OverridePolicy.defined %]<CV2OverridePolicy>[% CV2OverridePolicy %]</CV2OverridePolicy>[% END %]
+          [% IF ThreeDSecureOverridePolicy.defined %]<ThreeDSecureOverridePolicy>TRUE</ThreeDSecureOverridePolicy>[% END %]
         </TransactionControl>
       </TransactionDetails>
       <CardDetails>
