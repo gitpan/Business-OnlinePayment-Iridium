@@ -200,7 +200,7 @@ sub template {
           [% IF DuplicateDelay.defined %]<DuplicateDelay>[% DuplicateDelay %]</DuplicateDelay>[% END %]
           [% IF AVSOverridePolicy.defined %]<AVSOverridePolicy>[% AVSOverridePolicy %]</AVSOverridePolicy>[% END %]
           [% IF CV2OverridePolicy.defined %]<CV2OverridePolicy>[% CV2OverridePolicy %]</CV2OverridePolicy>[% END %]
-          [% IF ThreeDSecureOverridePolicy.defined %]<ThreeDSecureOverridePolicy>TRUE</ThreeDSecureOverridePolicy>[% END %]
+          [% IF ThreeDSecureOverridePolicy.defined %]<ThreeDSecureOverridePolicy>FALSE</ThreeDSecureOverridePolicy>[% END %]
         </TransactionControl>
       </TransactionDetails>
       <CardDetails>

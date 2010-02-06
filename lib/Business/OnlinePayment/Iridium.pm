@@ -14,11 +14,11 @@ use Carp qw/carp croak/;
 
 sub FIELD_MAP {
     return (
-        'login'        => 'MerchantID',
-        'password'     => 'Password',
-        'card_number'  => 'CardNumber',
-        'name_on_card' => 'CardName',
-        ( map { $_ => 'CV2' } qw/cv2 cvv cvv2/ ),
+        'login'                          => 'MerchantID',
+        'password'                       => 'Password',
+        'card_number'                    => 'CardNumber',
+        'name_on_card'                   => 'CardName',
+        'cv2'                            => 'CV2',
         'issue_number'                   => 'IssueNumber',
         'amount'                         => 'Amount',
         'invoice_number'                 => 'OrderID',
@@ -61,7 +61,7 @@ sub ACTION_MAP {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 has 'require_3d' => (
     isa     => 'Bool',
@@ -172,8 +172,9 @@ sub _submit_callback {
         $self->forward_to( $threeD_data->{'ACSURL'} );
         $self->pareq( $threeD_data->{'PaREQ'} );
         $self->cross_reference( $res_data->{'CrossReference'} );
+
         # Set error_message in case you just use is_success and don't check
-        # for require_3d (for simple users ;-) ). 
+        # for require_3d (for simple users ;-) ).
         $self->error_message( $res_result->{'Message'} );
     }
     else {
@@ -259,7 +260,7 @@ sub submit {
             map { $_ => $data{$_} }
               grep { $data{$_} }
               qw/MerchantID Password CardNumber CardName OrderID OrderDescription
-              EchoCardType EchoAVSCheckResult EchoCVSCheckResult EchoAmountReceived
+              EchoCardType CV2 EchoAVSCheckResult EchoCVSCheckResult EchoAmountReceived
               DuplicateDelay AVSOverridePolicy CVSOverridePolicy ThreeDSecureOverridePolicy
               Address1 Address2 Address3 Address4 City State PostCode CountryCode
               EmailAddress PhoneNumber CustomerIPAddress PassOutData/
@@ -417,6 +418,12 @@ L<Business::OnlinePayment>
   To Airspace Software Ltd <http://www.airspace.co.uk>, for the sponsorship.
 
   To Simon Elliott, for comments and questioning the design.
+
+=head1 COPYRIGHT 
+
+Copyright (C) 2008 wreis: Wallace Reis <reis.wallace@gmail.com>
+Copyright (C) 2010 ghenry: Gavin Henry <ghenry@suretecsystems.com>
+
 
 =head1 LICENSE
 

@@ -1,5 +1,8 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.09    Sat Feb 06 21:00:00 GMT
+        - CV2 is now getting passed to gateway 
+
 0.08    Fri Feb 05 23:00:00 GMT
         - Extended field map, set error messages correctly 
 
