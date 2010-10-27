@@ -1,5 +1,8 @@
 Revision history for Business-OnlinePayment-Iridium
 
+0.10    Wed Nov 27 22:02:00 2010 GMT
+        - PassOutData was not getting sent with ThreeDSecure
+
 0.09    Sat Feb 06 21:00:00 GMT
         - CV2 is now getting passed to gateway 
 

@@ -61,7 +61,7 @@ sub ACTION_MAP {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 has 'require_3d' => (
     isa     => 'Bool',
@@ -323,7 +323,9 @@ sub submit_3d {
 
     my $tx = ThreeDSecureAuthentication->new(
         (
-            map { $_ => $data{$_} } qw(MerchantID Password CrossReference PaRES)
+            map { $_ => $data{$_} }
+              grep { $data{$_} }
+              qw(MerchantID Password CrossReference PaRES PassOutData)
         ),
     );
     my $res = $tx->request;
