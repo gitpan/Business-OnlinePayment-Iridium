@@ -61,7 +61,7 @@ sub ACTION_MAP {
 
 extends 'Business::OnlinePayment';
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 has 'require_3d' => (
     isa     => 'Bool',
@@ -159,12 +159,14 @@ sub _submit_callback {
     if ( $self->result_code == 0 ) {
         $self->is_success(1);
         $self->authorization( $res_data->{'AuthCode'} );
+        $self->cross_reference( $res_data->{'CrossReference'} );
     }
     elsif ($self->result_code == 20
         && $res_result->{'PreviousTransactionResult'}->{'StatusCode'} == 0 )
     {
         $self->is_success(1);
         $self->authorization( $res_data->{'AuthCode'} );
+        $self->cross_reference( $res_data->{'CrossReference'} );
     }
     elsif ( $self->result_code == 3 ) {
         $self->require_3d(1);
